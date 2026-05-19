@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>题目管理</title>
+<style>
+:root {
+  --black: #1a1a1a;
+  --dark: #2d2d2d;
+  --gray-700: #666;
+  --gray-500: #999;
+  --gray-300: #ccc;
+  --gray-100: #e8e8e8;
+  --gray-50: #f5f5f5;
+  --white: #fff;
+  --border: #d4d4d4;
+  --border-light: #eaeaea;
+  --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--font); background: var(--gray-50); padding: 24px; color: var(--dark); }
+.container { max-width: 900px; margin: 0 auto; }
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.top-bar h2 { font-size: 20px; font-weight: 600; color: var(--black); letter-spacing: 2px; }
+.btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 18px; border: 1px solid var(--border);
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  cursor: pointer; text-decoration: none; transition: all 0.2s;
+  background: var(--white); color: var(--dark);
+}
+.btn:hover { border-color: var(--black); }
+.btn-black { background: var(--black); color: var(--white); border-color: var(--black); }
+.btn-black:hover { background: var(--dark); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+
+.card { background: var(--white); border: 1px solid var(--border-light); margin-bottom: 20px; }
+.card-body { padding: 24px; }
+
+.question-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.question-item:last-child { border-bottom: none; }
+.question-item .num {
+  min-width: 36px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); font-size: 13px; font-weight: 600;
+  color: var(--gray-700); margin-top: 6px;
+}
+.question-item form { flex: 1; display: flex; gap: 8px; align-items: flex-start; }
+.question-item input[type="text"] {
+  flex: 1; padding: 8px 12px; border: 1px solid var(--border);
+  font-size: 14px; font-family: inherit; color: var(--dark);
+}
+.question-item input[type="text"]:focus { outline: none; border-color: var(--black); }
+
+.flash-msg { padding: 10px 20px; margin-bottom: 16px; text-align: center; font-size: 13px; border: 1px solid; }
+.flash-success { background: var(--gray-50); color: var(--gray-900); border-color: var(--gray-300); }
+.flash-error { background: var(--gray-50); color: var(--black); border-color: var(--black); }
+.footer { text-align: center; padding: 20px; color: var(--gray-500); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h2>题目编辑</h2>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn">← 面板</a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for c, m in messages %}<div class="flash-msg flash-{{ c }}">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <div class="card"><div class="card-body">
+    {% for q in questions %}
+    <div class="question-item">
+      <div class="num">{{ q.question_number }}</div>
+      <form method="post">
+        <input type="hidden" name="qid" value="{{ q.id }}">
+        <input type="text" name="content" value="{{ q.content }}" required>
+        <button type="submit" class="btn btn-black btn-sm">保存</button>
+      </form>
+    </div>
+    {% endfor %}
+    <div style="margin-top:16px;font-size:12px;color:var(--gray-500);">
+      修改题目后，新提交的评价将使用更新后的题目。历史评价不受影响。
+    </div>
+  </div></div>
+
+  <div class="footer">&nbsp;</div>
+</div>
+</body>
+</html>

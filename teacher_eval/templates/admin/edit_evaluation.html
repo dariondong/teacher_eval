@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>编辑评价 #{{ evaluation.id }}</title>
+<style>
+:root {
+  --black: #1a1a1a;
+  --dark: #2d2d2d;
+  --gray-700: #666;
+  --gray-500: #999;
+  --gray-300: #ccc;
+  --gray-100: #e8e8e8;
+  --gray-50: #f5f5f5;
+  --white: #fff;
+  --border: #d4d4d4;
+  --border-light: #eaeaea;
+  --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: var(--font); background: var(--gray-50); padding: 24px; color: var(--dark); }
+.container { max-width: 880px; margin: 0 auto; }
+
+.top-bar {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.top-bar h2 { font-size: 20px; font-weight: 600; color: var(--black); letter-spacing: 1px; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 8px 18px; border: 1px solid var(--border);
+  font-size: 13px; font-weight: 500; font-family: inherit;
+  cursor: pointer; text-decoration: none; transition: all 0.2s;
+  background: var(--white); color: var(--dark);
+}
+.btn:hover { border-color: var(--black); }
+.btn-submit {
+  background: var(--black); color: var(--white);
+  border: none; padding: 14px 50px; font-size: 14px;
+  font-weight: 500; font-family: inherit; cursor: pointer;
+  letter-spacing: 4px; transition: all 0.3s;
+}
+.btn-submit:hover { background: var(--dark); }
+
+.card { background: var(--white); border: 1px solid var(--border-light); margin-bottom: 20px; }
+.card-body { padding: 28px; }
+
+.section-title { font-size: 14px; font-weight: 600; color: var(--black); margin-bottom: 16px; letter-spacing: 2px; text-transform: uppercase; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 1px; }
+
+select, textarea {
+  width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+  font-size: 14px; font-family: inherit; background: var(--white); color: var(--dark); transition: all 0.2s;
+}
+select:focus, textarea:focus { outline: none; border-color: var(--black); }
+
+.row2 { display: flex; gap: 16px; flex-wrap: wrap; }
+.row2 .form-group { flex: 1; min-width: 170px; }
+
+.question { padding: 16px 0; border-bottom: 1px solid var(--border-light); }
+.question:first-child { padding-top: 0; }
+.question:last-child { border-bottom: none; padding-bottom: 0; }
+.question-text { font-size: 13px; font-weight: 500; margin-bottom: 10px; color: var(--black); }
+
+.options { display: flex; flex-wrap: wrap; gap: 8px; }
+.options label {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+  border: 1px solid var(--border); cursor: pointer; font-size: 12px;
+  transition: all 0.2s; color: var(--gray-700); background: var(--white);
+}
+.options label:hover { border-color: var(--black); color: var(--black); }
+.options input[type="radio"] { appearance: none; width: 14px; height: 14px; border: 1px solid var(--gray-500); border-radius: 50%; margin:0; cursor: pointer; flex-shrink: 0; transition: all 0.2s; }
+.options input[type="radio"]:checked { border-color: var(--black); border-width: 5px; }
+.options label:has(input:checked) { border-color: var(--black); background: var(--gray-50); color: var(--black); font-weight: 500; }
+
+.flash-msg { padding: 10px 20px; margin-bottom: 20px; text-align: center; font-size: 13px; border: 1px solid; }
+.flash-success { background: var(--gray-50); color: var(--gray-900); border-color: var(--gray-300); }
+.flash-error { background: var(--gray-50); color: var(--black); border-color: var(--black); }
+
+.submit-wrap { text-align: center; margin-top: 8px; }
+
+.footer { text-align: center; padding: 20px; color: var(--gray-500); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <h2>编辑评价 #{{ evaluation.id }}</h2>
+    <a href="{{ url_for('admin_result_detail', id=evaluation.id) }}" class="btn">← 取消</a>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for c, m in messages %}<div class="flash-msg flash-{{ c }}">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <form method="post">
+    <div class="card"><div class="card-body">
+      <div class="section-title">基本信息</div>
+      <div class="row2">
+        <div class="form-group">
+          <label>年级</label>
+          <select name="grade">
+            {% for g in all_grades %}
+            <option value="{{ g }}" {% if evaluation.grade == g %}selected{% endif %}>{{ g }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>班级</label>
+          <select name="className">
+            {% for i in range(1, 51) %}
+            <option value="{{ i }}" {% if evaluation.class_name == i|string %}selected{% endif %}>{{ i }}班</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label>学科</label>
+          <select name="teacherSubject">
+            {% set subjects = ['语文','数学','英语','物理','化学','生物','政治','历史','地理','体育','信息技术','音乐','美术','心理'] %}
+            {% for s in subjects %}
+            <option value="{{ s }}" {% if evaluation.teacher_subject == s %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <div class="section-title">问卷内容</div>
+      {% set questions = [
+        "该教师遵守教师职业道德规范，如不体罚、不歧视学生等。",
+        "该老师的工作责任心强，关心爱护学生。",
+        "该老师从不组织学生征订除\"一教一辅\"外的教辅资料。",
+        "该老师能够按时上下课和值班。",
+        "该老师使用普通话授课。",
+        "该老师经常在学科教学中融入思政教育，帮助学生树立正确的世界观、人生观和价值观。",
+        "该老师的课堂组织管理严格、有序，同学们基本都能认真听课。",
+        "该老师备课充分，教学内容清晰、有条理。",
+        "该老师上课生动形象，重视基础和思维拓展，重难点突出。",
+        "该老师经常在课堂上对同学们进行学习方法和考试方法指导。",
+        "老师在课堂上注重师生互动，积极提问，善于调动学生积极性。",
+        "该老师的上课节奏合适，大部分同学可以适应。",
+        "该老师讲课的声音悦耳，音量层次分明。",
+        "该老师在上课时认真板书，而且板书清楚、美观、有条理（体育老师选A）。",
+        "该老师布置学生利用白天课堂时间自习时，学习任务明确，并且能亲自坐班管理。",
+        "该老师能合理布置课后作业，批改认真，讲评及时，讲评效果好（非九大科老师选A）。",
+        "该老师能按时布置日测和周测，批改认真，讲评及时，讲评效果好（非九大科老师选A）。",
+        "该老师早晚读、自修或周末值班工作认真、勤管纪律、耐心辅导学生。",
+        "该老师经常对学生进行个别谈心、个别辅导和思想教育。",
+        "你对该教师的总体评价非常满意。"
+      ] %}
+      {% for i in range(20) %}
+      {% set qkey = 'q' + (i+1)|string %}
+      <div class="question">
+        <div class="question-text">{{ i+1 }}. {{ questions[i] }}</div>
+        <div class="options">
+          {% for key, label in [('A','完全符合'),('B','基本符合'),('C','一般'),('D','基本不符合'),('E','完全不符合')] %}
+          <label>
+            <input type="radio" name="{{ qkey }}" value="{{ key }}" {{ 'checked' if evaluation[qkey] == key else '' }}>
+            {{ key }}. {{ label }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <div class="section-title">工作建议</div>
+      <div class="form-group">
+        <textarea name="suggestions" rows="4">{{ evaluation.suggestions }}</textarea>
+      </div>
+    </div></div>
+
+    <div class="submit-wrap">
+      <button type="submit" class="btn-submit">保存修改</button>
+    </div>
+  </form>
+
+  <div class="footer">&nbsp;</div>
+</div>
+</body>
+</html>

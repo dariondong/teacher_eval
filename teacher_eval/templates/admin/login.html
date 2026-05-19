@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理员登录</title>
+<style>
+:root {
+  --black: #1a1a1a;
+  --dark: #2d2d2d;
+  --gray-700: #666;
+  --gray-500: #999;
+  --gray-300: #ccc;
+  --gray-100: #e8e8e8;
+  --gray-50: #f5f5f5;
+  --white: #fff;
+  --border: #d4d4d4;
+  --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font);
+  background: var(--gray-50);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--dark);
+}
+.card {
+  max-width: 400px; width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.05);
+  animation: pop 0.5s ease-out;
+}
+@keyframes pop { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.card-header {
+  background: var(--black);
+  color: var(--white);
+  padding: 40px 32px 32px;
+  text-align: center;
+}
+.card-header .icon { font-size: 36px; margin-bottom: 12px; opacity: 0.7; }
+.card-header h1 { font-size: 20px; font-weight: 600; letter-spacing: 4px; }
+.card-header p { font-size: 13px; opacity: 0.4; margin-top: 6px; font-weight: 300; letter-spacing: 1px; }
+.card-body { padding: 36px 32px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 1px; }
+.form-group input {
+  width: 100%; padding: 11px 16px;
+  border: 1px solid var(--border); font-size: 15px; font-family: inherit;
+  transition: all 0.25s; background: var(--white); color: var(--dark);
+}
+.form-group input:focus { outline: none; border-color: var(--black); box-shadow: 0 0 0 3px rgba(0,0,0,0.05); }
+.btn {
+  width: 100%; padding: 13px;
+  background: var(--black); color: var(--white);
+  border: none; font-size: 14px; font-weight: 500; font-family: inherit;
+  cursor: pointer; letter-spacing: 6px; transition: all 0.3s;
+}
+.btn:hover { background: var(--dark); }
+.flash-msg { padding: 10px 16px; margin-bottom: 20px; text-align: center; font-size: 13px; border: 1px solid; }
+.flash-error { background: var(--gray-50); color: var(--black); border-color: var(--black); }
+.back-link { display: block; text-align: center; margin-top: 20px; color: var(--gray-500); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+.back-link:hover { color: var(--black); }
+.footer { text-align: center; padding: 16px; color: var(--gray-500); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="icon">⊕</div>
+    <h1>管理员登录</h1>
+    <p>教师教学评价管理系统</p>
+  </div>
+  <div class="card-body">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}{% for c, m in messages %}<div class="flash-msg flash-{{ c }}">{{ m }}</div>{% endfor %}{% endif %}
+    {% endwith %}
+    <form method="post">
+      <div class="form-group"><label>用户名</label><input type="text" name="username" required placeholder="请输入用户名"></div>
+      <div class="form-group"><label>密码</label><input type="password" name="password" required placeholder="请输入密码"></div>
+      <button type="submit" class="btn">登 录</button>
+    </form>
+    <a href="{{ url_for('survey') }}" class="back-link">← 返回问卷页面</a>
+  </div>
+</div>
+<div class="footer">&nbsp;</div>
+</body>
+</html>

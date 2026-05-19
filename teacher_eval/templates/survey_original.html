@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教师教学情况评价调查</title>
+<style>
+:root {
+  --black: #1a1a1a;
+  --dark: #2d2d2d;
+  --gray-700: #666;
+  --gray-500: #999;
+  --gray-300: #ccc;
+  --gray-100: #e8e8e8;
+  --gray-50: #f5f5f5;
+  --white: #fff;
+  --border: #d4d4d4;
+  --border-light: #eaeaea;
+  --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font);
+  background: var(--gray-50);
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  color: var(--dark);
+}
+.container { max-width: 640px; width: 100%; margin: 0 auto; }
+
+/* header */
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+  padding: 12px 0;
+}
+.header .school { font-size: 12px; color: var(--gray-500); letter-spacing: 4px; margin-bottom: 6px; }
+.header h1 { font-size: 22px; font-weight: 700; color: var(--black); letter-spacing: 2px; }
+.header .desc { font-size: 13px; color: var(--gray-500); margin-top: 8px; line-height: 1.6; }
+
+/* progress */
+.progress-wrap { margin-bottom: 32px; }
+.progress-bar { display: flex; gap: 4px; margin-bottom: 8px; }
+.progress-step { flex: 1; height: 3px; background: var(--gray-100); border-radius: 2px; transition: all 0.4s; }
+.progress-step.done { background: var(--black); }
+.progress-step.active { background: var(--black); box-shadow: 0 0 0 2px rgba(0,0,0,0.1); }
+.progress-text { font-size: 12px; color: var(--gray-500); text-align: center; letter-spacing: 1px; }
+
+/* card */
+.card {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  padding: 36px 32px 28px;
+  margin-bottom: 20px;
+  display: none;
+}
+.card.active { display: block; animation: fadeUp 0.35s ease-out; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+.step-tag {
+  display: inline-block;
+  font-size: 11px; color: var(--gray-500);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.card-title {
+  font-size: 17px; font-weight: 600; color: var(--black);
+  margin-bottom: 20px; line-height: 1.6;
+}
+
+.card-title .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px;
+  border: 1px solid var(--border); color: var(--gray-700);
+  font-size: 13px; font-weight: 600; margin-right: 10px;
+}
+
+/* basic info step */
+.info-grid { display: flex; flex-direction: column; gap: 16px; }
+.info-row label { display: block; font-size: 13px; font-weight: 500; color: var(--gray-700); margin-bottom: 6px; letter-spacing: 1px; }
+.info-row select {
+  width: 100%; padding: 11px 16px; border: 1px solid var(--border);
+  font-size: 15px; font-family: inherit; background: var(--white); color: var(--dark);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23666' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px; transition: all 0.2s;
+}
+.info-row select:focus { outline: none; border-color: var(--black); }
+
+/* options list */
+.options { display: flex; flex-direction: column; gap: 10px; }
+.options label {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 18px; border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s;
+  font-size: 14px; color: var(--gray-700);
+}
+.options label:hover { border-color: var(--black); }
+.options input[type="radio"] {
+  appearance: none; width: 18px; height: 18px;
+  border: 1px solid var(--gray-500); border-radius: 50%;
+  margin: 0; flex-shrink: 0; transition: all 0.2s;
+}
+.options input[type="radio"]:checked { border-color: var(--black); border-width: 6px; }
+.options label:has(input:checked) {
+  border-color: var(--black); background: var(--gray-50);
+}
+.options label:has(input:checked) .score { color: var(--black); font-weight: 600; }
+
+.score { font-size: 12px; color: var(--gray-500); margin-left: auto; }
+
+/* navigation */
+.nav { display: flex; gap: 10px; justify-content: space-between; margin-top: 8px; }
+.nav .btn {
+  padding: 12px 28px; border: 1px solid var(--border);
+  font-size: 14px; font-weight: 500; font-family: inherit;
+  cursor: pointer; background: var(--white); color: var(--dark);
+  transition: all 0.2s; letter-spacing: 1px;
+}
+.nav .btn:hover { border-color: var(--black); }
+.nav .btn-primary { background: var(--black); color: var(--white); border-color: var(--black); }
+.nav .btn-primary:hover { background: var(--dark); }
+.nav .btn:disabled { opacity: 0.3; cursor: default; }
+.nav .btn-outline { background: transparent; }
+
+/* suggestions textarea */
+textarea {
+  width: 100%; padding: 12px 16px; border: 1px solid var(--border);
+  font-size: 14px; font-family: inherit; resize: vertical;
+  min-height: 100px; transition: all 0.2s;
+}
+textarea:focus { outline: none; border-color: var(--black); }
+
+/* notice */
+#existingNotice {
+  background: var(--gray-50);
+  border: 1px solid var(--border);
+  padding: 14px 20px; margin-bottom: 20px;
+  font-size: 13px; color: var(--gray-700);
+  line-height: 1.6;
+}
+
+/* flash */
+.flash-msg { padding: 10px 20px; margin-bottom: 16px; text-align: center; font-size: 13px; border: 1px solid; }
+.flash-success { background: var(--gray-50); color: var(--gray-900); border-color: var(--gray-300); }
+.flash-error { background: var(--gray-50); color: var(--black); border-color: var(--black); }
+
+.footer { text-align: center; padding: 24px 20px 8px; color: var(--gray-500); font-size: 12px; }
+
+/* responsive */
+@media (max-width: 640px) {
+  body { padding: 12px; }
+  .card { padding: 24px 18px 20px; }
+  .card-title { font-size: 15px; }
+  .nav .btn { padding: 10px 20px; font-size: 13px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="school">高州市第二中学</div>
+    <h1>教学情况评价</h1>
+    <div class="desc">请为你的科任老师提供宝贵意见，所有数据仅用于教学改进</div>
+  </div>
+
+  <div id="existingNotice" style="display:none">
+    你已经评价过：<span id="existingInfo"></span>
+    <span style="color:var(--gray-500);font-size:12px;">（重新提交将覆盖）</span>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}{% for c, m in messages %}<div class="flash-msg flash-{{ c }}">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <form method="post" onsubmit="return validateForm()">
+    <input type="hidden" name="device_uuid" id="device_uuid">
+
+    <div class="progress-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+      <div class="progress-text" id="progressText">1 / {{ q_count + 1 }}</div>
+    </div>
+
+    <!-- Step 0: Basic Info -->
+    <div class="card active" data-step="0">
+      <div class="step-tag">基本信息</div>
+      <div class="card-title">请选择你要评价的老师</div>
+      <div class="info-grid">
+        <div class="info-row">
+          <label>年级 <span style="color:var(--gray-700);">*</span></label>
+          <select id="select1" name="grade" required onchange="onFirstSelectChange()">
+            <option value="">请选择</option>
+          </select>
+        </div>
+        <div class="info-row">
+          <label>班级 <span style="color:var(--gray-700);">*</span></label>
+          <select id="select2" name="className" required>
+            <option value="">请选择</option>
+          </select>
+        </div>
+        <div class="info-row">
+          <label>学科 <span style="color:var(--gray-700);">*</span></label>
+          <select name="teacherSubject" required>
+            <option value="">请选择</option>
+            {% for s in ['语文','数学','英语','物理','化学','生物','政治','历史','地理','体育','信息技术','音乐','美术','心理'] %}
+            <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="nav" style="justify-content:flex-end;margin-top:24px;">
+        <button type="button" class="btn btn-primary" onclick="goStep(1)">开始评价 →</button>
+      </div>
+    </div>
+
+    <!-- Steps 1-N: Questions -->
+    {% for i in range(q_count) %}
+    <div class="card" data-step="{{ i+1 }}">
+      <div class="step-tag">第 {{ i+1 }} 题 / {{ q_count }}</div>
+      <div class="card-title"><span class="num">{{ i+1 }}</span>{{ questions[i] }}</div>
+      <div class="options">
+        <label><input type="radio" name="q{{ i+1 }}" value="A"><span>A. 完全符合</span><span class="score">+5分</span></label>
+        <label><input type="radio" name="q{{ i+1 }}" value="B"><span>B. 基本符合</span><span class="score">+4分</span></label>
+        <label><input type="radio" name="q{{ i+1 }}" value="C"><span>C. 一般</span><span class="score">+3分</span></label>
+        <label><input type="radio" name="q{{ i+1 }}" value="D"><span>D. 基本不符合</span><span class="score">+2分</span></label>
+        <label><input type="radio" name="q{{ i+1 }}" value="E"><span>E. 完全不符合</span><span class="score">+1分</span></label>
+      </div>
+      <div class="nav">
+        <button type="button" class="btn btn-outline" onclick="goStep({{ i }})">← 上一题</button>
+        {% if i < q_count - 1 %}
+        <button type="button" class="btn btn-primary" onclick="goStep({{ i+2 }})">下一题 →</button>
+        {% else %}
+        <button type="button" class="btn btn-primary" onclick="goStep({{ q_count+1 }})">提交评价 →</button>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <!-- Step N+1: Review & Submit -->
+    <div class="card" data-step="{{ q_count+1 }}">
+      <div class="step-tag">预览提交</div>
+      <div class="card-title">📋 评价总览</div>
+      <div style="background:var(--gray-50);padding:16px;margin-bottom:20px;">
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:14px;">
+          <span><strong id="reviewGrade"></strong> · <span id="reviewClass"></span> · <span id="reviewSubject"></span></span>
+          <span style="font-weight:700;font-size:20px;" id="reviewTotal">0</span>
+          <span style="font-size:13px;color:var(--gray-500);">满分 {{ q_count * 5 }} 分（每题5分）</span>
+        </div>
+      </div>
+      <div style="margin-bottom:20px;max-height:200px;overflow-y:auto;border:1px solid var(--border-light);padding:12px;font-size:13px;color:var(--gray-700);" id="reviewList"></div>
+      <div class="info-grid">
+        <div class="info-row">
+          <label>对老师的补充建议（选填）</label>
+          <textarea name="suggestions" rows="3" placeholder="请在此处填写你的宝贵建议..."></textarea>
+        </div>
+      </div>
+      <div class="nav" style="margin-top:20px;">
+        <button type="button" class="btn btn-outline" onclick="goStep({{ q_count }})">← 修改答案</button>
+        <button type="submit" class="btn btn-primary">✓ 提交评价</button>
+      </div>
+    </div>
+
+  </form>
+
+  <div class="footer">高州市第二中学 · 教学评价系统</div>
+</div>
+
+<script>
+var currentStep = 0;
+var totalSteps = {{ q_count + 1 }};
+
+function goStep(n) {
+  if (n < 0 || n > totalSteps) return;
+
+  // validate current step before moving forward
+  if (n > currentStep) {
+    if (currentStep === 0) {
+      var g = document.querySelector('select[name="grade"]');
+      var c = document.querySelector('select[name="className"]');
+      if (!g.value) { alert('请选择年级'); g.focus(); return; }
+      if (!c.value) { alert('请选择班级'); c.focus(); return; }
+    } else if (currentStep >= 1 && currentStep <= {{ q_count }}) {
+      var name = 'q' + currentStep;
+      if (!document.querySelector('input[name="' + name + '"]:checked')) {
+        alert('请先完成本题评价');
+        return;
+      }
+    }
+  }
+
+  document.querySelectorAll('.card').forEach(function(el) { el.classList.remove('active'); });
+  var target = document.querySelector('.card[data-step="' + n + '"]');
+  if (target) target.classList.add('active');
+  currentStep = n;
+
+  // populate review step
+  if (n === {{ q_count + 1 }}) { updateReview(); }
+
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateReview() {
+  var g = document.querySelector('select[name="grade"]');
+  var c = document.querySelector('select[name="className"]');
+  var s = document.querySelector('select[name="teacherSubject"]');
+  document.getElementById('reviewGrade').textContent = g ? g.value : '';
+  document.getElementById('reviewClass').textContent = c ? c.options[c.selectedIndex].text : '';
+  document.getElementById('reviewSubject').textContent = s ? s.value + '老师' : '';
+
+  var total = 0;
+  var html = '';
+  for (var i = 1; i <= {{ q_count }}; i++) {
+    var sel = document.querySelector('input[name="q' + i + '"]:checked');
+    var val = sel ? sel.value : '-';
+    var score = 0;
+    if (val === 'A') score = 5;
+    else if (val === 'B') score = 4;
+    else if (val === 'C') score = 3;
+    else if (val === 'D') score = 2;
+    else if (val === 'E') score = 1;
+    total += score;
+    var label = {A:'完全符合',B:'基本符合',C:'一般',D:'基本不符合',E:'完全不符合'};
+    html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-light);">' +
+      '<span>第' + i + '题: ' + (label[val] || '未选') + '</span><span style="font-weight:600;">' + score + '分</span></div>';
+  }
+  document.getElementById('reviewList').innerHTML = html;
+  document.getElementById('reviewTotal').textContent = total + ' 分';
+}
+
+function updateProgress() {
+  var bar = document.getElementById('progressBar');
+  bar.innerHTML = '';
+  for (var i = 0; i <= totalSteps; i++) {
+    var step = document.createElement('div');
+    step.className = 'progress-step';
+    if (i < currentStep) step.className += ' done';
+    else if (i === currentStep) step.className += ' active';
+    bar.appendChild(step);
+  }
+  document.getElementById('progressText').textContent = (currentStep + 1) + ' / ' + (totalSteps + 1);
+}
+
+// keyboard navigation
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'Enter') {
+    e.preventDefault();
+    if (currentStep < totalSteps) goStep(currentStep + 1);
+  }
+  if (e.key === 'ArrowLeft') {
+    if (currentStep > 0) goStep(currentStep - 1);
+  }
+});
+
+// radio auto-advance
+document.addEventListener('change', function(e) {
+  if (e.target.type === 'radio' && e.target.name.startsWith('q')) {
+    setTimeout(function() {
+      if (currentStep >= 1 && currentStep < {{ q_count }}) {
+        goStep(currentStep + 1);
+      }
+    }, 200);
+  }
+});
+
+function validateForm() {
+  for (var i = 1; i <= {{ q_count }}; i++) {
+    if (!document.querySelector('input[name="q' + i + '"]:checked')) {
+      goStep(i);
+      alert('请完成第' + i + '题的评价');
+      return false;
+    }
+  }
+  return true;
+}
+
+// ---------- grade/class cascade ----------
+function addOption(s, v, t) { var o = document.createElement('option'); o.value = v; o.text = t; s.appendChild(o); }
+
+function onFirstSelectChange() {
+  var first = document.getElementById('select1');
+  var second = document.getElementById('select2');
+  var val = first.value;
+  second.innerHTML = '';
+  addOption(second, '', '请选择班级');
+  if (val) {
+    fetch('/api/classes/' + encodeURIComponent(val))
+      .then(function(r) { return r.json(); })
+      .then(function(data) { data.forEach(function(item) { addOption(second, item.value, item.label); }); });
+  }
+}
+
+function loadGrades() {
+  fetch('/api/grades')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var sel = document.getElementById('select1'); sel.innerHTML = '';
+      addOption(sel, '', '请选择');
+      data.forEach(function(g) { addOption(sel, g.value, g.label); });
+    });
+}
+
+// ---------- UUID ----------
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function getDeviceUUID() {
+  var uuid = localStorage.getItem('teacher_eval_uuid');
+  if (!uuid) { uuid = generateUUID(); localStorage.setItem('teacher_eval_uuid', uuid); }
+  return uuid;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  var uuid = getDeviceUUID();
+  document.getElementById('device_uuid').value = uuid;
+  loadGrades();
+  updateProgress();
+
+  fetch('/api/my-evaluation?uuid=' + encodeURIComponent(uuid))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data && data.length > 0) {
+        document.getElementById('existingInfo').innerHTML =
+          data.map(function(e) { return e.grade + ' ' + e.class_name + ' ' + e.teacher_subject + '老师'; }).join('、');
+        document.getElementById('existingNotice').style.display = 'block';
+      }
+    });
+});
+</script>
+
+</body>
+</html>

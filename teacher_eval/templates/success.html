@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提交成功</title>
+<style>
+:root {
+  --black: #1a1a1a;
+  --dark: #2d2d2d;
+  --gray-700: #666;
+  --gray-500: #999;
+  --gray-300: #ccc;
+  --gray-100: #e8e8e8;
+  --gray-50: #f5f5f5;
+  --white: #fff;
+  --border: #d4d4d4;
+  --font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: var(--font);
+  background: var(--gray-50);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  color: var(--dark);
+}
+.card {
+  max-width: 480px; width: 100%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.05);
+  animation: pop 0.5s ease-out;
+}
+@keyframes pop { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+.card-header {
+  background: var(--black);
+  color: var(--white);
+  padding: 48px 32px 36px;
+  text-align: center;
+}
+.card-header .icon {
+  width: 56px; height: 56px;
+  border: 2px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 16px;
+  font-size: 24px;
+}
+.card-header h1 { font-size: 24px; font-weight: 600; letter-spacing: 4px; }
+.card-header p { margin-top: 8px; font-size: 14px; opacity: 0.5; font-weight: 300; letter-spacing: 1px; }
+.card-body { padding: 40px 32px; text-align: center; }
+.info-block { background: var(--gray-50); padding: 24px; margin-bottom: 28px; }
+.info-block p { font-size: 15px; line-height: 1.8; }
+.info-block .detail { color: var(--gray-700); font-size: 13px; margin-top: 8px; letter-spacing: 0.5px; }
+.btn {
+  display: inline-block; padding: 14px 44px;
+  background: var(--black); color: var(--white);
+  border: none; font-size: 14px; font-weight: 500; font-family: inherit;
+  text-decoration: none; cursor: pointer; letter-spacing: 3px;
+  transition: all 0.3s;
+}
+.btn:hover { background: var(--dark); }
+.footer { text-align: center; padding: 20px; color: var(--gray-500); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="card-header">
+    <div class="icon">✓</div>
+    <h1>提交成功</h1>
+    <p>感谢你为老师提供的宝贵评价</p>
+  </div>
+  <div class="card-body">
+    <div class="info-block">
+      {% if evaluation %}
+      <p style="font-weight:500;">你的评价已成功提交</p>
+      <div class="detail">{{ evaluation.grade }} · {{ evaluation.class_name }}班 · {{ evaluation.teacher_subject }}</div>
+      {% else %}
+      <p>评价已成功提交</p>
+      {% endif %}
+    </div>
+    <a href="{{ url_for('survey') }}" class="btn">← 返回首页</a>
+  </div>
+</div>
+<div class="footer">&nbsp;</div>
+</body>
+</html>
