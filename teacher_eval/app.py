@@ -6,6 +6,7 @@ from models import db, Admin, Evaluation, ClassConfig, QuestionConfig
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'gaozhou-erzhong-eval-secret-2026')
+app.config['SCHOOL_NAME'] = os.environ.get('SCHOOL_NAME', '实验中学')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///evaluation.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -83,6 +84,11 @@ def avg_score_expr():
         for i in range(qn)
     )
     return case_sum / qn
+
+
+@app.context_processor
+def inject_globals():
+    return {'school_name': app.config['SCHOOL_NAME']}
 
 
 def init_db():
