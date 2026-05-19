@@ -107,3 +107,27 @@ class Evaluation(db.Model):
             'suggestions': self.suggestions,
             'created_at': self.created_at.strftime('%Y-%m-%d %H:%M') if self.created_at else '',
         }
+
+
+class Setting(db.Model):
+    __tablename__ = 'setting'
+    id = db.Column(db.Integer, primary_key=True)
+    key = db.Column(db.String(100), unique=True, nullable=False)
+    value = db.Column(db.Text, nullable=False, default='')
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+
+    @staticmethod
+    def get(key, default=''):
+        s = Setting.query.filter_by(key=key).first()
+        return s.value if s else default
+
+    @staticmethod
+    def set(key, value):
+        s = Setting.query.filter_by(key=key).first()
+        if s:
+            s.value = value
+        else:
+            s = Setting(key=key, value=value)
+            db.session.add(s)
+        db.session.commit()
+        return value

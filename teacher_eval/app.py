@@ -88,7 +88,9 @@ def avg_score_expr():
 
 @app.context_processor
 def inject_globals():
-    return {'school_name': app.config['SCHOOL_NAME']}
+    with app.app_context():
+        school_name = Setting.get('school_name') or app.config['SCHOOL_NAME']
+    return {'school_name': school_name}
 
 
 def init_db():
@@ -112,6 +114,8 @@ def init_db():
         if QuestionConfig.query.count() == 0:
             for i, txt in enumerate(DEFAULT_QUESTIONS, 1):
                 db.session.add(QuestionConfig(question_number=i, content=txt))
+        if not Setting.query.filter_by(key='school_name').first():
+            Setting.set('school_name', app.config['SCHOOL_NAME'])
         db.session.commit()
         print('DB initialized: admin/admin123 | class configs | questions seeded')
 
@@ -395,6 +399,22 @@ def admin_delete_class(grade):
     if cfg: db.session.delete(cfg); db.session.commit(); flash(f'已删除年级：{grade}', 'success')
     else: flash('该年级不存在', 'error')
     return redirect(url_for('admin_classes'))
+
+
+# ─── Admin: settings ──────────────────────────────────
+@app.route('/admin/settings', methods=['GET', 'POST'])
+@login_required
+def admin_settings():
+    if request.method == 'POST':
+        school_name = request.form.get('school_name', '').strip()
+        if school_name:
+            Setting.set('school_name', school_name)
+            flash('学校名称已更新', 'success')
+        else:
+            flash('学校名称不能为空', 'error')
+        return redirect(url_for('admin_settings'))
+    return render_template('admin/settings.html',
+                           school_name=Setting.get('school_name', app.config['SCHOOL_NAME']))
 
 
 # ─── Admin: stats ──────────────────────────────────────
