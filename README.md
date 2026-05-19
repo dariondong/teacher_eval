@@ -26,6 +26,7 @@
 | 仪表盘 | `/admin` |
 | 评价记录 | `/admin/results` |
 | 统计分析 | `/admin/stats` |
+| 系统设置 | `/admin/settings` |
 | 题目管理 | `/admin/questions` |
 | 班级配置 | `/admin/classes` |
 | 管理员管理 | `/admin/admins` |
@@ -104,7 +105,7 @@ docker-compose up -d
 
 ## 配置项
 
-- **环境变量 `SCHOOL_NAME`**: 学校名称（默认 `实验中学`）
+- **学校名称**: 通过管理端「系统设置」页面修改，存储于数据库；环境变量 `SCHOOL_NAME` 作为首次初始化默认值（默认 `实验中学`）
 - **环境变量 `SECRET_KEY`**: 会话密钥（默认 `gaozhou-erzhong-eval-secret-2026`）
 - **数据库**: 默认使用 `instance/evaluation.db`（SQLite）
 - **题目评分**: A-5分, B-4分, C-3分, D-2分, E-1分，满分100分（20题×5分）
@@ -128,7 +129,7 @@ python stress_test.py --url http://localhost:5000 --count 200 --concurrent 20
 ```
 teacher_eval/
 ├── app.py                     # Flask 应用主入口
-├── models.py                  # 数据模型 (Admin, Evaluation, ClassConfig, QuestionConfig)
+├── models.py                  # 数据模型 (Admin, Evaluation, ClassConfig, QuestionConfig, Setting)
 ├── requirements.txt           # Python 依赖
 ├── Dockerfile                 # Docker 构建文件
 ├── stress_test.py             # 压力测试工具
@@ -136,7 +137,8 @@ teacher_eval/
 │   ├── survey_original.html   # 学生评价问卷
 │   ├── success.html           # 提交成功页面
 │   ├── base.html              # 管理端基础布局
-│   └── admin/                 # 管理端页面
+│   │   ├── settings.html      # 系统设置
+│   │   └── ...                # 其他管理端页面
 ├── static/                    # 静态资源
 └── instance/                  # 数据库文件（自动生成）
 ```
